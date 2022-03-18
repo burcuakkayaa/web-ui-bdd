@@ -1,33 +1,59 @@
 package factory;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
+import utils.ConfigReader;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Properties;
+
 
 public class DriverFactory {
 
-    private static WebDriver driver = null;
+    public static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
+    private final ConfigReader reader = new ConfigReader();
 
     public WebDriver getDriverManager(String browser) {
 
         switch (browser) {
             case "firefox":
-                driver = WebDriverManager.firefoxdriver().create();
+               CreateFirefoxDriver firefox = new CreateFirefoxDriver();
+               tlDriver = firefox.createFirefoxDriver();
                 break;
             case "opera":
-                driver = WebDriverManager.operadriver().create();
+                CreateOperaDriver opera = new CreateOperaDriver();
+                tlDriver = opera.createOperaDriver();
                 break;
             case "safari":
-                driver = WebDriverManager.safaridriver().create();
+                CreateSafariDriver safari = new CreateSafariDriver();
+                tlDriver = safari.createSafariDriver();
                 break;
             case  "chrome":
             default:
-                driver = WebDriverManager.chromedriver().create();
+                CreateChromeDriver chrome = new CreateChromeDriver();
+                tlDriver = chrome.createChromeDriver();
+                break;
         }
+
+        WebDriver driver = tlDriver.get();
+        Properties properties = null;
+        try {
+            properties = reader.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        driver.manage().deleteAllCookies();
+        driver.manage().window().maximize();
+
+        assert properties != null;
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Long.parseLong(properties.getProperty("default_implicitWait"))));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(Long.parseLong(properties.getProperty("default_pageLoadWait"))));
 
         return driver;
     }
 
-    public WebDriver getDriver() {
-        return driver;
+    public static WebDriver getDriver() {
+        return tlDriver.get();
     }
 }

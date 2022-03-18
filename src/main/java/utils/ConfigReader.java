@@ -1,18 +1,25 @@
 package utils;
 
+
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
 
-    private Properties properties;
-
     public Properties init() throws IOException {
-        properties = new Properties();
-        FileInputStream ip = new FileInputStream(".\\src\\test\\resources\\config.properties");
-        properties.load(ip);
+        Properties properties = new Properties();
+        FileInputStream ip = null;
+        try {
+            ip = new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/config.properties");
+            properties.load(ip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            assert ip != null;
+            ip.close();
+        }
+
 
         return properties;
     }

@@ -1,29 +1,43 @@
 package myStepDefinitions;
 
-import factory.DriverFactory;
+
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import myHooks.BaseHooks;
-import org.openqa.selenium.WebDriver;
-import utils.Constants;
 
-public class HomePageSteps  {
 
-    DriverFactory factory = new DriverFactory();
-    WebDriver driver =  factory.getDriver();
+public class HomePageSteps implements BaseSteps {
 
     @Given("user is on homepage")
     public void userIsOnHomepage() {
-         driver.get(Constants.url);
+         homePage.getHomePage();
     }
 
-    @Then("user should see page title")
-    public void userShouldSeePageTitle() {
-       System.out.println(driver.getTitle());
+    @When("user accepts all cookies")
+    public void userAcceptsAllCookies() {
+        homePage.clickAcceptsCookies();
     }
 
-    @When("user deniyor")
-    public void userDeniyor() {
+    @And("user closes insider icon")
+    public void userClosesInsiderIcon() {
+        homePage.closeInsiderModal();
+
     }
+
+    @And("user clicks More menu in Navigation Bar")
+    public void userClicksMoreMenuInNavigationBar() {
+        homePage.clickMoreMenu();
+    }
+
+    @Then("user should see categories")
+    public void userShouldSeeCategories() {
+        homePage.checkAllCategoriesAreDisplayed();
+    }
+
+    @When("user selects {string}")
+    public void userSelects(String menu) {
+        homePage.selectMenu(menu);
+    }
+
 }

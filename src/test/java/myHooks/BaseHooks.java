@@ -1,6 +1,6 @@
 package myHooks;
 
-import com.google.common.io.Files;
+
 import factory.DriverFactory;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -9,9 +9,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
 
-import java.io.File;
-import java.io.IOException;
-
 
 
 public class BaseHooks {
@@ -19,27 +16,27 @@ public class BaseHooks {
     protected static DriverFactory factory;
 
     public BaseHooks() {
-        this.factory = new DriverFactory();
+        factory = new DriverFactory();
     }
 
     @Before("@chrome")
-    public void launchBrowserAsChrome() throws IOException {
+    public void launchBrowserAsChrome()  {
         factory.getDriverManager("chrome");
 
     }
 
     @Before("@firefox")
-    public void launchBrowserAsFirefox() throws IOException {
+    public void launchBrowserAsFirefox() {
         factory.getDriverManager("firefox");
     }
 
     @Before("@safari")
-    public void launchBrowserAsSafari() throws IOException {
+    public void launchBrowserAsSafari()  {
         factory.getDriverManager("safari");
     }
 
     @Before("@opera")
-    public void launchBrowserAsOpera() throws IOException {
+    public void launchBrowserAsOpera()  {
         factory.getDriverManager("opera");
     }
 
@@ -50,7 +47,7 @@ public class BaseHooks {
                 //take screenshot
                 String screenshotName=  scenario.getName().replaceAll(" ", "_");
 
-                byte[] sourcePath = ((TakesScreenshot)factory.getDriver()).getScreenshotAs(OutputType.BYTES);
+                byte[] sourcePath = ((TakesScreenshot) DriverFactory.getDriver()).getScreenshotAs(OutputType.BYTES);
 
                 scenario.attach(sourcePath, "image/png", screenshotName);
 
@@ -61,6 +58,6 @@ public class BaseHooks {
 
     @After(order = 0)
     public void AfterSteps() {
-        factory.getDriver().quit();
+        DriverFactory.getDriver().quit();
     }
 }

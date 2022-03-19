@@ -28,6 +28,7 @@ public class HomePage extends BasePage {
         waitForLoad();
         getUrl();
         waitUntilUrlContains(Constants.url);
+        waitForJQueryLoad();
     }
 
     public void clickAcceptsCookies() {

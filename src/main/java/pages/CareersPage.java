@@ -29,6 +29,7 @@ public class CareersPage extends BasePage {
     public void checkLocationIsOpened() {
         waitUntilJSReady();
         waitForJQueryLoad();
+        waitUntilVisible(locationArea);
         findAndScrollElement(locationArea,15);
         Assert.assertTrue(isElementPresent(locationArea));
     }

@@ -5,34 +5,33 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
 import utils.Constants;
-
 import java.time.Duration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+
 public class BasePage {
 
-    private WebDriver driver;
+    private final WebDriver driver;
     private WebDriverWait jsWait;
-    private JavascriptExecutor jsExec;
+    private final JavascriptExecutor jsExec;
     private final int timeOut = 60;
 
 
-    public BasePage(WebDriver driver)  {
+    public BasePage(WebDriver driver) {
         this.driver = DriverFactory.getDriver();
         jsWait = new WebDriverWait(this.driver, 10);
         jsExec = (JavascriptExecutor) this.driver;
 
     }
 
-    public void getUrl()  {
+    public void getUrl() {
         driver.get(Constants.url);
     }
 
     public WebElement getWebElement(By locator) {
 
-        return  driver.findElement(locator);
+        return driver.findElement(locator);
 
     }
 
@@ -42,9 +41,36 @@ public class BasePage {
     }
 
 
-    public void  selectElementBySelectValue(By locator, String value) {
+    public void selectElementBySelectValue(By locator, String value) {
         Select select = new Select(getWebElement(locator));
         select.selectByValue(value);
+    }
+
+    public void selectElementSelectByVisibleText(By locator, String text) {
+        Select select = new Select(getWebElement(locator));
+        select.selectByVisibleText(text);
+    }
+
+
+    public void selectElementByIndex(By locator, int index) {
+        Select select = new Select(getWebElement(locator));
+        select.selectByIndex(index);
+    }
+
+    public void selectElement(By locator) {
+        Select select = new Select(getWebElement(locator));
+        select.getWrappedElement().findElement(By.cssSelector("option.job-location.istanbul-turkey")).click();
+
+    }
+
+    public List<WebElement> getSelectOptions(By locator) {
+        Select select = new Select(getWebElement(locator));
+        return select.getOptions();
+    }
+
+    public void deSelectElementByText(By locator, String text) {
+        Select select = new Select(getWebElement(locator));
+        select.deselectByVisibleText(text);
     }
 
     public boolean isElementPresent(By locator) {
@@ -113,6 +139,7 @@ public class BasePage {
         actions.clickAndHold(element);
         actions.moveToElement(element).click().perform();
     }
+
     public String getText(By locator) {
         WebElement element = getWebElement(locator);
         return element.getText();
@@ -163,6 +190,13 @@ public class BasePage {
         wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
+    public void waitUntilElementIsLocated(By locator) {
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
+                .pollingEvery(Duration.ofMillis(10)).ignoring(StaleElementReferenceException.class)
+                .ignoring(NoSuchElementException.class);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
     public void waitUntilClickable(WebElement element) {
         Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
                 .pollingEvery(Duration.ofMillis(10)).ignoring(StaleElementReferenceException.class)
@@ -186,7 +220,7 @@ public class BasePage {
         return true;
     }
 
-    public synchronized boolean waitUntilUrlNotContains(String expectedValue)  {
+    public synchronized boolean waitUntilUrlNotContains(String expectedValue) {
 
         Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
                 .pollingEvery(Duration.ofMillis(1000)).ignoring(StaleElementReferenceException.class)
@@ -215,21 +249,21 @@ public class BasePage {
     }
 
     public Boolean waitUntilElementIsDisplayed(By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
                 .pollingEvery(Duration.ofMillis(10)).ignoring(StaleElementReferenceException.class)
                 .ignoring(NoSuchElementException.class);
         return wait.until(ExpectedConditions.elementToBeClickable(locator)).isDisplayed();
     }
 
     public Boolean waitUntilElementIsDisplayed(WebElement element) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
                 .pollingEvery(Duration.ofMillis(10)).ignoring(StaleElementReferenceException.class)
                 .ignoring(NoSuchElementException.class);
         return wait.until(ExpectedConditions.elementToBeClickable(element)).isDisplayed();
     }
 
     public Boolean waitUntilElementIsSelected(By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
                 .pollingEvery(Duration.ofMillis(10)).ignoring(StaleElementReferenceException.class)
                 .ignoring(NoSuchElementException.class);
         return wait.until(ExpectedConditions.elementToBeClickable(locator)).isSelected();
@@ -253,7 +287,7 @@ public class BasePage {
             };
             WebDriverWait wait = new WebDriverWait(driver, 240);
             wait.until(pageLoadCondition);
-        }catch(Exception e) {
+        } catch (Exception e) {
             new WebDriverWait(driver, 30).until((ExpectedCondition<Boolean>) wd ->
                     ((JavascriptExecutor) wd).executeScript("return document.readyState").equals("complete"));
         }
@@ -268,9 +302,8 @@ public class BasePage {
     }
 
     public Boolean checkElementIsDisplayed(WebElement element) {
-        Boolean flag = element.isDisplayed();
 
-        return flag;
+        return element.isDisplayed();
     }
 
     public void moveToActiveElement() {
@@ -303,15 +336,11 @@ public class BasePage {
 
 
     public void moveToNewTab(String url) {
-        Set s=driver.getWindowHandles(); //this method will gives you the handles of all opened windows
+        Set s = driver.getWindowHandles();
 
-        Iterator ite=s.iterator();
-
-        while(ite.hasNext())
-        {
-            String popupHandle=ite.next().toString();
-            if(!popupHandle.contains(url))
-            {
+        for (Object o : s) {
+            String popupHandle = o.toString();
+            if (!popupHandle.contains(url)) {
                 driver.switchTo().window(popupHandle);
             }
         }
@@ -320,8 +349,13 @@ public class BasePage {
 
 
     public void scrollInTheMiddleOfElement(WebElement element) {
-        //scroll to middle with Javascript Executor
+
         JavascriptExecutor j = (JavascriptExecutor) driver;
         j.executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'})", element);
+    }
+
+
+    public void implicitWait(long seconds) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(seconds));
     }
 }

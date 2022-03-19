@@ -19,7 +19,12 @@ public class CreateSafariDriver extends DriverFactory {
     private SafariOptions getOptions() {
         SafariOptions safariOptions = new SafariOptions();
         safariOptions.setCapability("disable-infobars", true);
+        safariOptions.setCapability("incognito", true);
+        safariOptions.setCapability("enable-automation", true);
+        safariOptions.setCapability("start-maximized", true);
+        safariOptions.setCapability("disable-cache", true);
         safariOptions.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+        safariOptions.setUseTechnologyPreview(false);
 
         return safariOptions;
     }

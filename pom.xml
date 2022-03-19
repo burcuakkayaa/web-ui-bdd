@@ -9,8 +9,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>web-ui-bdd</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -135,6 +134,27 @@
               <extent.reporter.spark.out>test-output/SparkReport/Spark.html</extent.reporter.spark.out>
             </systemPropertyVariables>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.0.0-M3</version>
+          <executions>
+            <execution>
+              <phase>test</phase>
+              <goals>
+                <goal>integration-test</goal>
+              </goals>
+              <configuration>
+                <includes>
+                  <include>**/*TestRunner.java</include>
+                </includes>
+                <parallel>methods</parallel>
+                <threadCount>1</threadCount>
+                <perCoreThreadCount>true</perCoreThreadCount>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>

@@ -57,12 +57,6 @@ public class BasePage {
         select.selectByIndex(index);
     }
 
-    public void selectElement(By locator) {
-        Select select = new Select(getWebElement(locator));
-        select.getWrappedElement().findElement(By.cssSelector("option.job-location.istanbul-turkey")).click();
-
-    }
-
     public List<WebElement> getSelectOptions(By locator) {
         Select select = new Select(getWebElement(locator));
         return select.getOptions();
